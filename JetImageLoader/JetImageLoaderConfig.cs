@@ -18,11 +18,11 @@ namespace JetImageLoader
 
         private JetImageLoaderConfig(Builder builder)
         {
-            IsLogEnabled               = builder.IsLogEnabled;
-            CacheMode                  = builder.CacheMode;
-            DownloaderImpl             = builder.DownloaderImpl;
-            MemoryCacheImpl            = builder.MemoryCacheImpl;
-            StorageCacheImpl           = builder.StorageCacheImpl;
+            IsLogEnabled     = builder.IsLogEnabled;
+            CacheMode        = builder.CacheMode;
+            DownloaderImpl   = builder.DownloaderImpl;
+            MemoryCacheImpl  = builder.MemoryCacheImpl;
+            StorageCacheImpl = builder.StorageCacheImpl;
         }
 
 
