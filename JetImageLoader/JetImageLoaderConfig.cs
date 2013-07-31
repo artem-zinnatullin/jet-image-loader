@@ -83,6 +83,11 @@ namespace JetImageLoader
 
             private void CheckParams()
             {
+                if ((CacheMode == CacheMode.MemoryAndStorageCache || CacheMode == CacheMode.OnlyMemoryCache) && MemoryCacheImpl == null)
+                {
+                    throw new ArgumentException("CacheMode " + CacheMode + " requires MemoryCacheImpl");
+                }
+
                 if ((CacheMode == CacheMode.MemoryAndStorageCache || CacheMode == CacheMode.OnlyStorageCache) && StorageCacheImpl == null)
                 {
                     throw new ArgumentException("CacheMode " + CacheMode + " requires StorageCacheImpl");
