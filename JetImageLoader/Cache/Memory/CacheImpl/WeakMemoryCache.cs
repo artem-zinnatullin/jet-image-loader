@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace JetImageLoader.Cache.Memory.CacheImpl
 {
     public class WeakMemoryCache<TKey, TValue> : BaseMemoryCache<TKey, TValue> where TKey : class where TValue : class
@@ -12,7 +14,18 @@ namespace JetImageLoader.Cache.Memory.CacheImpl
 
         public override void Put(TKey key, TValue value)
         {
-            _synchronizedWeakDictionary.Add(key, value);
+            try
+            {
+                _synchronizedWeakDictionary.Add(key, value);
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (ArgumentException)
+            {
+                // Already exists in weak, do nothing                
+            }
         }
 
         public override bool TryGetValue(TKey key, out TValue value)
