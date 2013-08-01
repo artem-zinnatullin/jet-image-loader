@@ -54,9 +54,9 @@ aaand __that is all__, now it can load images from network, cache them in memory
 
 3) __JetImageLoader already has basic implementations for all this things__:
 <pre>
-    1 Downloader implemetation     — HttpWebRequestDownloader based on HttpWebRequest class
-    1 Memory cache implementation  — WeakMemoryCache based on ConditionalWeakTable with weak references
+    1 Downloader implemetation      — HttpWebRequestDownloader based on HttpWebRequest class
+    1 Memory cache implementation   — WeakMemoryCache based on ConditionalWeakTable with weak references
                                      and auto GC cleaning (very cool)
-    2 Storage cache implementation — LimitedStorageCache with configurable limit in bytes to store on disk
+    2 Storage cache implementations — LimitedStorageCache with configurable limit in bytes to store on disk
                                      and stupid :) UnlimitedStorageCache implementation
 </pre>
