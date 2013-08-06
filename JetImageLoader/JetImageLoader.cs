@@ -121,9 +121,18 @@ namespace JetImageLoader
 
                     if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyStorageCache)
                     {
-                        // Async saving to the storage cache
+                        // Async saving to the storage cache without await
                         // ReSharper disable once CSharpWarnings::CS4014
-                        Config.StorageCacheImpl.Save(imageUrl, downloadResult.ResultStream);
+                        Config.StorageCacheImpl.SaveAsync(imageUrl, downloadResult.ResultStream)
+                            .ContinueWith(
+                            task => 
+                                {
+                                    if (task.IsFaulted || !task.Result)
+                                    {
+                                        Log("[error] failed to save in storage: " + imageUri);
+                                    }
+                                }
+                        );
                     }
                 }
 
@@ -171,7 +180,7 @@ namespace JetImageLoader
                 if (Config.StorageCacheImpl.IsCacheExists(imageUrl))
                 {
                     Log("[storage] " + imageUrl);
-                    var storageStream = await Config.StorageCacheImpl.LoadCacheStream(imageUrl);
+                    var storageStream = await Config.StorageCacheImpl.LoadCacheStreamAsync(imageUrl);
 
                     // Moving cache to the memory
                     if (Config.CacheMode == CacheMode.MemoryAndStorageCache)

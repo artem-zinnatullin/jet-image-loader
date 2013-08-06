@@ -43,12 +43,12 @@ namespace JetImageLoader.Cache.Storage
 
         /// <summary>
         /// You should implement this method. Usefull to handle cache saving as you want
-        /// Base implementation is SaveInternal(), you can call it in your implementation
+        /// Base implementation is InternalSaveAsync(), you can call it in your implementation
         /// </summary>
         /// <param name="cacheKey">will be used by CacheFileNameGenerator</param>
         /// <param name="cacheStream">will be written to the cache file</param>
         /// <returns>true if cache was saved, false otherwise</returns>
-        public abstract Task<bool> Save(string cacheKey, Stream cacheStream);
+        public abstract Task<bool> SaveAsync(string cacheKey, Stream cacheStream);
 
         /// <summary>
         /// Saves the file with fullFilePath, uses FileMode.Create, so file create time will be rewrited if needed
@@ -57,7 +57,7 @@ namespace JetImageLoader.Cache.Storage
         /// <param name="fullFilePath">example: "\\image_cache\\213898adj0jd0asd</param>
         /// <param name="cacheStream">stream to write to the file</param>
         /// <returns>true if file was successfully written, false otherwise</returns>
-        protected async virtual Task<bool> SaveInternal(string fullFilePath, Stream cacheStream)
+        protected async virtual Task<bool> InternalSaveAsync(string fullFilePath, Stream cacheStream)
         {
             using (var fileStream = new IsolatedStorageFileStream(fullFilePath, FileMode.Create, FileAccess.ReadWrite, ISF))
             {
@@ -89,7 +89,7 @@ namespace JetImageLoader.Cache.Storage
         /// </summary>
         /// <param name="cacheKey">key will be used by CacheFileNameGenerator to get cache's file name</param>
         /// <returns>Stream of that file or null, if it does not exists</returns>
-        public async virtual Task<Stream> LoadCacheStream(string cacheKey)
+        public async virtual Task<Stream> LoadCacheStreamAsync(string cacheKey)
         {
             var fullFilePath = GetFullFilePath(CacheFileNameGenerator.GenerateCacheFileName(cacheKey));
 

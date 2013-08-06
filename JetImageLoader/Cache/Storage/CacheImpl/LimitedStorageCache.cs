@@ -25,7 +25,7 @@ namespace JetImageLoader.Cache.Storage.CacheImpl
             BeginCountCurrentCacheSize();
         }
 
-        public async override Task<bool> Save(string cacheKey, Stream cacheStream)
+        public async override Task<bool> SaveAsync(string cacheKey, Stream cacheStream)
         {
             var fullFileName = Path.Combine(CacheDirectory, CacheFileNameGenerator.GenerateCacheFileName(cacheKey));
             var cacheSizeInBytes = cacheStream.Length;
@@ -38,7 +38,7 @@ namespace JetImageLoader.Cache.Storage.CacheImpl
                 }
             }
 
-            var wasFileSaved = await base.SaveInternal(fullFileName, cacheStream);
+            var wasFileSaved = await base.InternalSaveAsync(fullFileName, cacheStream);
             
             if (wasFileSaved)
             {
