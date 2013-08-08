@@ -122,8 +122,7 @@ namespace JetImageLoader
                     if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyStorageCache)
                     {
                         // Async saving to the storage cache without await
-                        // ReSharper disable once CSharpWarnings::CS4014
-                        Config.StorageCacheImpl.SaveAsync(imageUrl, downloadResult.ResultStream)
+                        var saveAsync = Config.StorageCacheImpl.SaveAsync(imageUrl, downloadResult.ResultStream)
                             .ContinueWith(
                             task => 
                                 {
