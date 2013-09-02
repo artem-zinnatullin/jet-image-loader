@@ -14,6 +14,7 @@ namespace JetImageLoader
 
         protected BaseJetImageLoaderConverter()
         {
+            // ReSharper disable once DoNotCallOverridableMethodsInConstructor
             var config = GetJetImageLoaderConfig();
             if (config == null) throw new ArgumentException("JetImageLoaderConfig can not be null");
 
@@ -27,7 +28,17 @@ namespace JetImageLoader
 
             if (String.IsNullOrEmpty(imageUrl)) return null;
 
-            var imageUri = new Uri(imageUrl);
+            Uri imageUri;
+
+            try
+            {
+                imageUri = new Uri(imageUrl);
+            }
+            catch
+            {
+                JetImageLoader.Log("[network] error incorrect uri " + value + " , image was not loaded");
+                return null;
+            }
 
             if (imageUri.Scheme == "http" || imageUri.Scheme == "https")
             {
@@ -37,7 +48,25 @@ namespace JetImageLoader
                 {
                     if (getImageStreamTask.Result != null)
                     {
-                        Deployment.Current.Dispatcher.BeginInvoke(() => bitmapImage.SetSource(getImageStreamTask.Result));
+                        Deployment.Current.Dispatcher.BeginInvoke(() =>
+                        {
+                            try
+                            {
+                                bitmapImage.SetSource(getImageStreamTask.Result);
+                            }
+                            catch
+                            {
+                                // Try to set source again
+                                try
+                                {
+                                    bitmapImage.SetSource(getImageStreamTask.Result);
+                                }
+                                catch
+                                {
+                                    JetImageLoader.Log("[error] can not set image stream as source for BitmapImage, image uri: " + imageUrl);
+                                }
+                            }
+                        });
                     }
                 }));
 

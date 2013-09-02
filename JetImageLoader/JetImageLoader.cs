@@ -173,8 +173,7 @@ namespace JetImageLoader
                 }
             }
 
-            if (Config.CacheMode == CacheMode.MemoryAndStorageCache ||
-                Config.CacheMode == CacheMode.OnlyStorageCache)
+            if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyStorageCache)
             {
                 if (Config.StorageCacheImpl.IsCacheExists(imageUrl))
                 {
