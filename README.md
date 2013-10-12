@@ -3,13 +3,15 @@ JetImageLoader load, cache, show, do it again!
 
 fast and powerfull image loader with memory and storage caching for your Windows Phone 8+ projects!
 
+(Many ideas were taken from [UniversalImageLoader for Android](https://github.com/nostra13/Android-Universal-Image-Loader))
+
 ####Like a boss:
 * Load images
 * Cache them in memory
 * Cache them on storage
 * Do it asynchronously
 
-![alt text](http://jetimageloader.artemzin.com/screenshots/sample_app_screenshot_1.png "Awesome, right?! Check out sample app!")
+![sample screenshot](http://jetimageloader.artemzin.com/screenshots/sample_app_screenshot_1.png "Awesome, right?! Check out sample app!")
 
 ##Why JetImageLoader is super?##
 
