@@ -9,6 +9,8 @@ fast and powerfull image loader with memory and storage caching for your Windows
 * Cache them on storage
 * Do it asynchronously
 
+![alt text](http://jetimageloader.artemzin.com/screenshots/sample_app_screenshot_1.png "Awesome, right?! Check out sample app!")
+
 ##Why JetImageLoader is super?##
 
 1) __Easy to add to your project and start using it in 4 simple steps__:
