@@ -14,7 +14,7 @@ fast and powerfull image loader with memory and storage caching for your Windows
 ##Why JetImageLoader is super?##
 
 1) __Easy to add to your project and start using it in 4 simple steps__:
-* 1.1) __Add reference to JetImageLoader.dll__
+* 1.1) __Add reference to JetImageLoader.dll or use nuget: PM> Install-Package WP-JetImagLoader__
 * 1.2) __Extend JetImageLoaderConverter and configure it__:
 <pre>
     public class MyAppJetImageLoaderConverter : BaseJetImageLoaderConverter
@@ -62,3 +62,6 @@ aaand __that is all__, now it can load images from network, cache them in memory
     2 Storage cache implementations — LimitedStorageCache with configurable limit in bytes to store on disk
                                      and stupid :) UnlimitedStorageCache implementation
 </pre>
+
+
+####NuGet: PM> Install-Package WP-JetImagLoader
