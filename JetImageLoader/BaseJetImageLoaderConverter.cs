@@ -37,7 +37,17 @@ namespace JetImageLoader
                 {
                     if (getImageStreamTask.Result != null)
                     {
-                        Deployment.Current.Dispatcher.BeginInvoke(() => bitmapImage.SetSource(getImageStreamTask.Result));
+                        Deployment.Current.Dispatcher.BeginInvoke(() => 
+                        {
+                            try
+                            {
+                                bitmapImage.SetSource(getImageStreamTask.Result);
+                            }
+                            catch
+                            {
+                                // catching exceptions, like when source stream is corrupted or is not an image, etc...
+                            }
+                        });
                     }
                 }));
 
