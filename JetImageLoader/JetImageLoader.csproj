@@ -96,6 +96,7 @@
     <Compile Include="Cache\Storage\SynchronizedDictionary.cs" />
     <Compile Include="JetImageLoader.cs" />
     <Compile Include="JetImageLoaderConfig.cs" />
+    <Compile Include="JetImageLoaderResult.cs" />
     <Compile Include="Network\DownloadResult.cs" />
     <Compile Include="Network\HttpWebRequestDownloader.cs" />
     <Compile Include="Network\HttpWebRequestExtensions.cs" />

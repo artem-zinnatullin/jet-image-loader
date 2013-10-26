@@ -51,7 +51,11 @@ namespace JetImageLoader
         /// <param name="jetImageLoaderConfig"></param>
         public virtual void Initialize(JetImageLoaderConfig jetImageLoaderConfig)
         {
-            if (jetImageLoaderConfig == null) throw new ArgumentException("Can not initialize JetImageLoader with empty configuration");
+            if (jetImageLoaderConfig == null)
+            {
+                throw new ArgumentException("Can not initialize JetImageLoader with empty configuration");
+            }
+            
             if (Config != null) return;
 
             Config = jetImageLoaderConfig;
@@ -59,7 +63,10 @@ namespace JetImageLoader
 
         protected virtual void CheckConfig()
         {
-            if (Config == null) throw new InvalidOperationException("JetImageLoader configuration was not setted, please Initialize JetImageLoader instance with JetImageLoaderConfiguration");
+            if (Config == null)
+            {
+                throw new InvalidOperationException("JetImageLoader configuration was not setted, please Initialize JetImageLoader instance with JetImageLoaderConfiguration");
+            }
         }
 
         /// <summary>
@@ -99,7 +106,11 @@ namespace JetImageLoader
             if (Config.CacheMode != CacheMode.NoCache)
             {
                 var resultFromCache = await LoadImageStreamFromCache(imageUrl);
-                if (resultFromCache != null) return resultFromCache;
+                
+                if (resultFromCache != null)
+                {
+                    return resultFromCache;
+                }
             }
 
             try
@@ -117,7 +128,10 @@ namespace JetImageLoader
 
                 if (Config.CacheMode != CacheMode.NoCache)
                 {
-                    if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyMemoryCache) Config.MemoryCacheImpl.Put(imageUrl, downloadResult.ResultStream);
+                    if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyMemoryCache)
+                    {
+                        Config.MemoryCacheImpl.Put(imageUrl, downloadResult.ResultStream);
+                    }
 
                     if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyStorageCache)
                     {
