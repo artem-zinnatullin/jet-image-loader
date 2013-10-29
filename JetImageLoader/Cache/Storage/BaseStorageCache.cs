@@ -9,6 +9,12 @@ namespace JetImageLoader.Cache.Storage
     public abstract class BaseStorageCache
     {
         /// <summary>
+        /// Default value of cache max lifetime in milliseconds
+        /// Equals to one week 604800000 milliseconds == 7 * 24 * 60 * 60 * 1000
+        /// </summary>
+        protected const long DefaultCacheMaxLifetimeInMillis = 7 * 24 * 60 * 60 * 1000; // == 604800000;
+
+        /// <summary>
         /// IsolatedStorageFile instance to work with app's ISF
         /// </summary>
         protected readonly IsolatedStorageFile ISF;
@@ -16,26 +22,45 @@ namespace JetImageLoader.Cache.Storage
         /// <summary>
         /// Base cache directory where all cache will be saved
         /// </summary>
-        protected readonly string CacheDirectory;
+        protected virtual string CacheDirectory { get; set; }
 
         /// <summary>
         /// Generates file name from the cache key
         /// </summary>
-        protected ICacheFileNameGenerator CacheFileNameGenerator;
+        protected virtual ICacheFileNameGenerator CacheFileNameGenerator { get; set; }
 
-        protected BaseStorageCache(IsolatedStorageFile isf, string cacheDirectory, ICacheFileNameGenerator cacheFileNameGenerator)
+        /// <summary>
+        /// Maximum age of cache in milliseconds
+        /// <= 0 — always alive
+        /// </summary>
+        protected virtual long CacheMaxLifetimeInMillis { get; set; }
+
+        protected BaseStorageCache(IsolatedStorageFile isf, string cacheDirectory, ICacheFileNameGenerator cacheFileNameGenerator, long cacheMaxLifetimeInMillis = DefaultCacheMaxLifetimeInMillis)
         {
-            if (isf == null) throw new ArgumentNullException("isf");
+            if (isf == null)
+            {
+                throw new ArgumentNullException("isf");
+            }
 
-            if (String.IsNullOrEmpty(cacheDirectory)) throw new ArgumentException("cacheDirectory could not be null or empty");
-            if (!cacheDirectory.StartsWith("\\")) throw new ArgumentException("cacheDirectory should starts with double slashes: \\");
-            
-            if (cacheFileNameGenerator == null) throw new ArgumentNullException("cacheFileNameGenerator");
+            if (String.IsNullOrEmpty(cacheDirectory))
+            {
+                throw new ArgumentException("cacheDirectory name could not be null or empty");
+            }
 
+            if (!cacheDirectory.StartsWith("\\"))
+            {
+                throw new ArgumentException("cacheDirectory name should starts with double slashes: \\");
+            }
+
+            if (cacheFileNameGenerator == null)
+            {
+                throw new ArgumentNullException("cacheFileNameGenerator");
+            }
 
             ISF = isf;
             CacheDirectory = cacheDirectory;
             CacheFileNameGenerator = cacheFileNameGenerator;
+            CacheMaxLifetimeInMillis = cacheMaxLifetimeInMillis;
 
             // Creating cache directory if it not exists
             ISF.CreateDirectory(CacheDirectory);
@@ -43,12 +68,12 @@ namespace JetImageLoader.Cache.Storage
 
         /// <summary>
         /// You should implement this method. Usefull to handle cache saving as you want
-        /// Base implementation is SaveInternal(), you can call it in your implementation
+        /// Base implementation is InternalSaveAsync(), you can call it in your implementation
         /// </summary>
         /// <param name="cacheKey">will be used by CacheFileNameGenerator</param>
         /// <param name="cacheStream">will be written to the cache file</param>
         /// <returns>true if cache was saved, false otherwise</returns>
-        public abstract Task<bool> Save(string cacheKey, Stream cacheStream);
+        public abstract Task<bool> SaveAsync(string cacheKey, Stream cacheStream);
 
         /// <summary>
         /// Saves the file with fullFilePath, uses FileMode.Create, so file create time will be rewrited if needed
@@ -57,7 +82,7 @@ namespace JetImageLoader.Cache.Storage
         /// <param name="fullFilePath">example: "\\image_cache\\213898adj0jd0asd</param>
         /// <param name="cacheStream">stream to write to the file</param>
         /// <returns>true if file was successfully written, false otherwise</returns>
-        protected async virtual Task<bool> SaveInternal(string fullFilePath, Stream cacheStream)
+        protected async virtual Task<bool> InternalSaveAsync(string fullFilePath, Stream cacheStream)
         {
             using (var fileStream = new IsolatedStorageFileStream(fullFilePath, FileMode.Create, FileAccess.ReadWrite, ISF))
             {
@@ -89,7 +114,7 @@ namespace JetImageLoader.Cache.Storage
         /// </summary>
         /// <param name="cacheKey">key will be used by CacheFileNameGenerator to get cache's file name</param>
         /// <returns>Stream of that file or null, if it does not exists</returns>
-        public async virtual Task<Stream> LoadCacheStream(string cacheKey)
+        public async virtual Task<Stream> LoadCacheStreamAsync(string cacheKey)
         {
             var fullFilePath = GetFullFilePath(CacheFileNameGenerator.GenerateCacheFileName(cacheKey));
 
@@ -117,7 +142,7 @@ namespace JetImageLoader.Cache.Storage
         /// </summary>
         /// <param name="fileName">name of the file</param>
         /// <returns>full path to the file</returns>
-        protected string GetFullFilePath(string fileName)
+        protected virtual string GetFullFilePath(string fileName)
         {
             return Path.Combine(CacheDirectory, fileName);
         }
@@ -125,9 +150,9 @@ namespace JetImageLoader.Cache.Storage
         /// <summary>
         /// Checks file existence
         /// </summary>
-        /// <param name="cacheKey">will be used by CacheFileNameGenerator</param>
+        /// <param name="cacheKey">Will be used by CacheFileNameGenerator</param>
         /// <returns>true if file with cache exists, false otherwise</returns>
-        public bool IsCacheExists(string cacheKey)
+        public virtual bool IsCacheExists(string cacheKey)
         {
             var fullFilePath = GetFullFilePath(CacheFileNameGenerator.GenerateCacheFileName(cacheKey));
 
@@ -143,9 +168,33 @@ namespace JetImageLoader.Cache.Storage
         }
 
         /// <summary>
+        /// Checks is cache existst and its last write time &lt;= CacheMaxLifetimeInMillis
+        /// </summary>
+        /// <param name="cacheKey">Will be used by CacheFileNameGenerator</param>
+        /// <returns>true if cache exists and alive, false otherwise</returns>
+        public virtual bool IsCacheExistsAndAlive(string cacheKey)
+        {
+            var fullFilePath = GetFullFilePath(CacheFileNameGenerator.GenerateCacheFileName(cacheKey));
+
+            try
+            {
+                if (ISF.FileExists(fullFilePath))
+                {
+                    return CacheMaxLifetimeInMillis <= 0 ? true : ((DateTime.Now - ISF.GetLastWriteTime(fullFilePath)).TotalMilliseconds < CacheMaxLifetimeInMillis);
+                }
+            }
+            catch
+            {
+                JetImageLoader.Log("[error] can not check is cache exists and alive, file: " + fullFilePath);
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Deletes all cache from CacheDirectory
         /// </summary>
-        public void Clear()
+        public virtual void Clear()
         {
             DeleteDirContent(CacheDirectory);
         }
@@ -154,7 +203,7 @@ namespace JetImageLoader.Cache.Storage
         /// Recursive method to delete all content of needed directory
         /// </summary>
         /// <param name="absoluteDirPath">Path of the dir, which content you want to delete</param>
-        protected void DeleteDirContent(string absoluteDirPath)
+        protected virtual void DeleteDirContent(string absoluteDirPath)
         {
             // Pattern to match all innerFiles and innerDirectories inside absoluteDirPath
             var filesAndDirectoriesPattern = absoluteDirPath + @"\*";

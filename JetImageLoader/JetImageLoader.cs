@@ -49,17 +49,24 @@ namespace JetImageLoader
         /// Initializing will be done only once, so other invokes of this method will do nothing
         /// </summary>
         /// <param name="jetImageLoaderConfig"></param>
-        public void Initialize(JetImageLoaderConfig jetImageLoaderConfig)
+        public virtual void Initialize(JetImageLoaderConfig jetImageLoaderConfig)
         {
-            if (jetImageLoaderConfig == null) throw new ArgumentException("Can not initialize JetImageLoader with empty configuration");
+            if (jetImageLoaderConfig == null)
+            {
+                throw new ArgumentException("Can not initialize JetImageLoader with empty configuration");
+            }
+            
             if (Config != null) return;
 
             Config = jetImageLoaderConfig;
         }
 
-        private void CheckConfig()
+        protected virtual void CheckConfig()
         {
-            if (Config == null) throw new InvalidOperationException("JetImageLoader configuration was not setted, please Initialize JetImageLoader instance with JetImageLoaderConfiguration");
+            if (Config == null)
+            {
+                throw new InvalidOperationException("JetImageLoader configuration was not setted, please Initialize JetImageLoader instance with JetImageLoaderConfiguration");
+            }
         }
 
         /// <summary>
@@ -67,7 +74,7 @@ namespace JetImageLoader
         /// </summary>
         /// <param name="imageUrl">Url of the image to load</param>
         /// <returns>BitmapImage if load was successfull or null otherwise</returns>
-        public async Task<BitmapImage> LoadImage(string imageUrl)
+        public virtual async Task<BitmapImage> LoadImage(string imageUrl)
         {
             return await LoadImage(new Uri(imageUrl));
         }
@@ -77,7 +84,7 @@ namespace JetImageLoader
         /// </summary>
         /// <param name="imageUri">Uri of the image to load</param>
         /// <returns>BitmapImage if load was successfull or null otherwise</returns>
-        public async Task<BitmapImage> LoadImage(Uri imageUri)
+        public virtual async Task<BitmapImage> LoadImage(Uri imageUri)
         {
             CheckConfig();
             var bitmapImage = new BitmapImage();
@@ -90,7 +97,7 @@ namespace JetImageLoader
         /// </summary>
         /// <param name="imageUri">Uri of the image to load</param>
         /// <returns>Stream of the image if load was successfull, null otherwise</returns>
-        public async Task<Stream> LoadImageStream(Uri imageUri)
+        public virtual async Task<Stream> LoadImageStream(Uri imageUri)
         {
             CheckConfig();
 
@@ -99,7 +106,11 @@ namespace JetImageLoader
             if (Config.CacheMode != CacheMode.NoCache)
             {
                 var resultFromCache = await LoadImageStreamFromCache(imageUrl);
-                if (resultFromCache != null) return resultFromCache;
+                
+                if (resultFromCache != null)
+                {
+                    return resultFromCache;
+                }
             }
 
             try
@@ -117,13 +128,24 @@ namespace JetImageLoader
 
                 if (Config.CacheMode != CacheMode.NoCache)
                 {
-                    if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyMemoryCache) Config.MemoryCacheImpl.Put(imageUrl, downloadResult.ResultStream);
+                    if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyMemoryCache)
+                    {
+                        Config.MemoryCacheImpl.Put(imageUrl, downloadResult.ResultStream);
+                    }
 
                     if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyStorageCache)
                     {
-                        // Async saving to the storage cache
-                        // ReSharper disable once CSharpWarnings::CS4014
-                        Config.StorageCacheImpl.Save(imageUrl, downloadResult.ResultStream);
+                        // Async saving to the storage cache without await
+                        var saveAsync = Config.StorageCacheImpl.SaveAsync(imageUrl, downloadResult.ResultStream)
+                            .ContinueWith(
+                            task => 
+                                {
+                                    if (task.IsFaulted || !task.Result)
+                                    {
+                                        Log("[error] failed to save in storage: " + imageUri);
+                                    }
+                                }
+                        );
                     }
                 }
 
@@ -152,7 +174,7 @@ namespace JetImageLoader
         /// </summary>
         /// <param name="imageUrl"></param>
         /// <returns>Steam of the image or null if it was not found in cache</returns>
-        protected async Task<Stream> LoadImageStreamFromCache(string imageUrl)
+        protected virtual async Task<Stream> LoadImageStreamFromCache(string imageUrl)
         {
             if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyMemoryCache)
             {
@@ -165,17 +187,18 @@ namespace JetImageLoader
                 }
             }
 
-            if (Config.CacheMode == CacheMode.MemoryAndStorageCache ||
-                Config.CacheMode == CacheMode.OnlyStorageCache)
+            if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyStorageCache)
             {
-                if (Config.StorageCacheImpl.IsCacheExists(imageUrl))
+                if (Config.StorageCacheImpl.IsCacheExistsAndAlive(imageUrl))
                 {
                     Log("[storage] " + imageUrl);
-                    var storageStream = await Config.StorageCacheImpl.LoadCacheStream(imageUrl);
+                    var storageStream = await Config.StorageCacheImpl.LoadCacheStreamAsync(imageUrl);
 
                     // Moving cache to the memory
                     if (Config.CacheMode == CacheMode.MemoryAndStorageCache)
+                    {
                         Config.MemoryCacheImpl.Put(imageUrl, storageStream);
+                    }
 
                     return storageStream;
                 }

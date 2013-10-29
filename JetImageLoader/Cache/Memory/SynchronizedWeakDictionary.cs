@@ -6,13 +6,18 @@ using System.Runtime.CompilerServices;
 
 namespace JetImageLoader.Cache.Memory
 {
-    public class SynchronizedWeakDictionary<TKey, TValue> : IDictionary<TKey, TValue> where TKey : class where TValue : class
+    public class SynchronizedWeakRefDictionary<TKey, TValue> : IDictionary<TKey, TValue> where TKey : class where TValue : class
     {
-        private readonly ConditionalWeakTable<TKey, TValue> _weakTable = new ConditionalWeakTable<TKey, TValue>();
-        
+        private readonly WeakRefDictionary<TKey, TValue> _weakRefDictionary = new WeakRefDictionary<TKey, TValue>();
         private readonly object _lockObj = new object();
 
-        private readonly IList<TKey> _keyList = new List<TKey>(); 
+        private readonly IList<TKey> _keyList = new List<TKey>();
+
+        public int Count { get; private set; }
+
+        public bool IsReadOnly { get; private set; }
+
+        public ICollection<TValue> Values { get; private set; }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
@@ -28,7 +33,7 @@ namespace JetImageLoader.Cache.Memory
         {
             lock (_lockObj)
             {
-                _weakTable.Add(item.Key, item.Value);
+                _weakRefDictionary.Add(item.Key, item.Value);
                 _keyList.Add(item.Key);
                 Count++;
             }
@@ -40,7 +45,7 @@ namespace JetImageLoader.Cache.Memory
             {
                 foreach (var key in _keyList)
                 {
-                    _weakTable.Remove(key);
+                    _weakRefDictionary.Remove(key);
                 }
 
                 _keyList.Clear();
@@ -52,7 +57,7 @@ namespace JetImageLoader.Cache.Memory
             lock (_lockObj)
             {
                 TValue o;
-                return _weakTable.TryGetValue(item.Key, out o);
+                return _weakRefDictionary.TryGetValue(item.Key, out o);
             }
         }
 
@@ -66,14 +71,11 @@ namespace JetImageLoader.Cache.Memory
             throw new NotImplementedException();
         }
 
-        public int Count { get; private set; }
-
-        public bool IsReadOnly { get; private set; }
         public void Add(TKey key, TValue value)
         {
             lock (_lockObj)
             {
-                _weakTable.Add(key, value);
+                _weakRefDictionary.Add(key, value);
                 _keyList.Add(key);
                 Count++;
             }
@@ -91,7 +93,7 @@ namespace JetImageLoader.Cache.Memory
                 if (_keyList.Remove(key))
                 {
                     Count--;
-                    _weakTable.Remove(key);
+                    _weakRefDictionary.Remove(key);
                     return true;
                 }
 
@@ -103,7 +105,7 @@ namespace JetImageLoader.Cache.Memory
         {
             lock (_lockObj)
             {
-                return _weakTable.TryGetValue(key, out value);
+                return _weakRefDictionary.TryGetValue(key, out value);
             }
         }
 
@@ -114,7 +116,7 @@ namespace JetImageLoader.Cache.Memory
                 lock (_lockObj)
                 {
                     TValue value;
-                    return _weakTable.TryGetValue(key, out value) ? value : null;
+                    return _weakRefDictionary.TryGetValue(key, out value) ? value : null;
                 }
             }
 
@@ -122,8 +124,8 @@ namespace JetImageLoader.Cache.Memory
             {
                 lock (_lockObj)
                 {
-                    _weakTable.Remove(key);
-                    _weakTable.Add(key, value);
+                    _weakRefDictionary.Remove(key);
+                    _weakRefDictionary.Add(key, value);
                 }
             }
         }
@@ -139,6 +141,5 @@ namespace JetImageLoader.Cache.Memory
             } 
         }
 
-        public ICollection<TValue> Values { get; private set; }
     }
 }
