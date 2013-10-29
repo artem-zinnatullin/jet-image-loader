@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
@@ -10,13 +9,16 @@ namespace JetImageLoader
 {
     public abstract class BaseJetImageLoaderConverter : IValueConverter
     {
-        protected JetImageLoader JetImageLoader { get; private set; }
+        protected virtual JetImageLoader JetImageLoader { get; set; }
 
         protected BaseJetImageLoaderConverter()
         {
-            // ReSharper disable once DoNotCallOverridableMethodsInConstructor
             var config = GetJetImageLoaderConfig();
-            if (config == null) throw new ArgumentException("JetImageLoaderConfig can not be null");
+
+            if (config == null)
+            {
+                throw new ArgumentException("JetImageLoaderConfig can not be null");
+            }
 
             JetImageLoader = JetImageLoader.Instance;
             JetImageLoader.Initialize(config);
@@ -24,19 +26,27 @@ namespace JetImageLoader
 
         public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var imageUrl = value as string;
-
-            if (String.IsNullOrEmpty(imageUrl)) return null;
-
             Uri imageUri;
 
-            try
+            if (value is string)
             {
-                imageUri = new Uri(imageUrl);
+                try
+                {
+                    imageUri = new Uri((string)value);
+                }
+                catch
+                {
+                    // TODO add error log or callback
+                    return null;
+                }
             }
-            catch
+            else if (value is Uri)
             {
-                JetImageLoader.Log("[network] error incorrect uri " + value + " , image was not loaded");
+                imageUri = (Uri)value;
+            }
+            else
+            {
+                // TODO add error log or callback
                 return null;
             }
 
@@ -56,15 +66,7 @@ namespace JetImageLoader
                             }
                             catch
                             {
-                                // Try to set source again
-                                try
-                                {
-                                    bitmapImage.SetSource(getImageStreamTask.Result);
-                                }
-                                catch
-                                {
-                                    JetImageLoader.Log("[error] can not set image stream as source for BitmapImage, image uri: " + imageUrl);
-                                }
+                                // catching exceptions, like when source stream is corrupted or is not an image, etc...
                             }
                         });
                     }
@@ -80,7 +82,7 @@ namespace JetImageLoader
         {
             throw new NotImplementedException();
         }
-        
+
         protected abstract JetImageLoaderConfig GetJetImageLoaderConfig();
     }
 }
