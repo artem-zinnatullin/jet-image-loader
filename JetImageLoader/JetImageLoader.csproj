@@ -88,6 +88,7 @@
     <Compile Include="Cache\Memory\BaseMemoryCache.cs" />
     <Compile Include="Cache\Memory\CacheImpl\WeakMemoryCache.cs" />
     <Compile Include="Cache\Memory\SynchronizedWeakDictionary.cs" />
+    <Compile Include="Cache\Memory\WeakRefDictionary.cs" />
     <Compile Include="Cache\Storage\BaseStorageCache.cs" />
     <Compile Include="Cache\Storage\CacheFileNameGenerators\SHA1CacheFileNameGenerator.cs" />
     <Compile Include="Cache\Storage\CacheImpl\LimitedStorageCache.cs" />
