@@ -9,6 +9,9 @@
 // FITNESS FOR A PARTICULAR PURPOSE.
 //===============================================================================
 
+//===============================================================================
+// Artem Zinnatullin (artem.zinnatullin@gmail.com), I changed some things, but in general it is same to Microsoft patterns & practices implementation
+//===============================================================================
 
 using System;
 using System.Collections;

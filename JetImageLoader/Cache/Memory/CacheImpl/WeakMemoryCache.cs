@@ -14,18 +14,7 @@ namespace JetImageLoader.Cache.Memory.CacheImpl
 
         public override void Put(TKey key, TValue value)
         {
-            try
-            {
-                _synchronizedWeakDictionary.Add(key, value);
-            }
-            catch (ArgumentNullException)
-            {
-                throw;
-            }
-            catch (ArgumentException)
-            {
-                // Already exists in weak, do nothing                
-            }
+            _synchronizedWeakDictionary[key] = value;
         }
 
         public override bool TryGetValue(TKey key, out TValue value)
