@@ -19,7 +19,16 @@ namespace JetImageLoader.Cache.Storage.CacheImpl
         private long _currentCacheSizeInBytes = -1;
         private readonly long _cacheLimitInBytes;
 
-        public LimitedStorageCache(IsolatedStorageFile isf, string cacheDirectory, ICacheFileNameGenerator cacheFileNameGenerator, long cacheLimitInBytes) : base(isf, cacheDirectory, cacheFileNameGenerator)
+        /// <summary>
+        /// Creates new LimitedStorageCache instance
+        /// </summary>
+        /// <param name="isf">IsolatedStorageFile instance to work with file system</param>
+        /// <param name="cacheDirectory">Directory to store cache, starting with two slashes "\\"</param>
+        /// <param name="cacheFileNameGenerator">ICacheFileNameGenerator instance to generate cache filenames</param>
+        /// <param name="cacheLimitInBytes">Limit of total cache size in bytes, for example 10 mb == 10 * 1024 * 1024</param>
+        /// <param name="cacheMaxLifetimeInMillis">Cache max lifetime in millis, for example two weeks = 2 * 7 * 24 * 60 * 60 * 1000; default value == one week; pass value &lt;= 0 to disable max cache lifetime</param>
+        public LimitedStorageCache(IsolatedStorageFile isf, string cacheDirectory, ICacheFileNameGenerator cacheFileNameGenerator, long cacheLimitInBytes, long cacheMaxLifetimeInMillis = DefaultCacheMaxLifetimeInMillis)
+            : base(isf, cacheDirectory, cacheFileNameGenerator, cacheMaxLifetimeInMillis)
         {
             _cacheLimitInBytes = cacheLimitInBytes;
             BeginCountCurrentCacheSize();

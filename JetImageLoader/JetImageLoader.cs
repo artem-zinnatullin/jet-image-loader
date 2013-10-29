@@ -189,14 +189,16 @@ namespace JetImageLoader
 
             if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyStorageCache)
             {
-                if (Config.StorageCacheImpl.IsCacheExists(imageUrl))
+                if (Config.StorageCacheImpl.IsCacheExistsAndAlive(imageUrl))
                 {
                     Log("[storage] " + imageUrl);
                     var storageStream = await Config.StorageCacheImpl.LoadCacheStreamAsync(imageUrl);
 
                     // Moving cache to the memory
                     if (Config.CacheMode == CacheMode.MemoryAndStorageCache)
+                    {
                         Config.MemoryCacheImpl.Put(imageUrl, storageStream);
+                    }
 
                     return storageStream;
                 }
