@@ -101,6 +101,11 @@ namespace JetImageLoader
         {
             CheckConfig();
 
+            if (imageUri == null)
+            {
+                return null;
+            }
+            
             var imageUrl = imageUri.ToString();
 
             if (Config.CacheMode != CacheMode.NoCache)
@@ -169,6 +174,63 @@ namespace JetImageLoader
             return null;
         }
 
+        // under construction
+        protected virtual async Task<Stream> LoadImageStreamFromUri(Uri imageUri)
+        {
+            if (!IsUriSchemeSupported(imageUri))
+            {
+                return null;
+            }
+
+            var imageUriAsString = imageUri.ToString();
+
+            if (imageUri.Scheme == "http" || imageUri.Scheme == "https")
+            {
+                Log("[network] loading " + imageUriAsString);
+                var downloadResult = await Config.DownloaderImpl.DownloadAsync(imageUri);
+
+                if (downloadResult.Exception != null || downloadResult.ResultStream == null)
+                {
+                    Log("[error] failed to download: " + imageUriAsString);
+                    return null;
+                }
+
+                Log("[network] loaded " + imageUriAsString);
+
+                if (Config.CacheMode != CacheMode.NoCache)
+                {
+                    if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyMemoryCache)
+                    {
+                        Config.MemoryCacheImpl.Put(imageUriAsString, downloadResult.ResultStream);
+                    }
+
+                    if (Config.CacheMode == CacheMode.MemoryAndStorageCache || Config.CacheMode == CacheMode.OnlyStorageCache)
+                    {
+                        // Async saving to the storage cache without await
+                        var saveAsync = Config.StorageCacheImpl.SaveAsync(imageUriAsString, downloadResult.ResultStream)
+                            .ContinueWith(
+                            task =>
+                            {
+                                if (task.IsFaulted || !task.Result)
+                                {
+                                    Log("[error] failed to save in storage: " + imageUri);
+                                }
+                            }
+                        );
+                    }
+                }
+
+                return downloadResult.ResultStream;
+            }
+            else if (imageUri.Scheme == "assets")
+            {
+                // TODO implementation
+                return null;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Loads image stream from memory or storage cachecache
         /// </summary>
@@ -205,6 +267,13 @@ namespace JetImageLoader
             }
 
             return null;
+        }
+
+        // under construction
+        protected virtual bool IsUriSchemeSupported(Uri uri)
+        {
+            var scheme = uri.Scheme;
+            return scheme == "http" || scheme == "https" || scheme == "assets";
         }
 
         /// <summary>
