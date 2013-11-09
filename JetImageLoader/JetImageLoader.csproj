@@ -103,6 +103,7 @@
     <Compile Include="Network\HttpWebRequestExtensions.cs" />
     <Compile Include="Network\IDownloader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\DateTimeUtil.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
