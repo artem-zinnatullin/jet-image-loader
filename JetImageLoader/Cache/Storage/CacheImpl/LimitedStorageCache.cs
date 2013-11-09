@@ -1,4 +1,5 @@
 ﻿
+using JetImageLoader.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -73,7 +74,7 @@ namespace JetImageLoader.Cache.Storage.CacheImpl
             
             if (wasFileSaved)
             {
-                _lastAccessTimeDictionary[Path.Combine(CacheDirectory, fullFileName)] = DateTime.Now.Millisecond;
+                _lastAccessTimeDictionary[Path.Combine(CacheDirectory, fullFileName)] = DateTimeUtil.CurrentTimeMillis();
                 CurrentCacheSizeInBytes += cacheStream.Length; // Updating current cache size
             }
 
@@ -110,7 +111,7 @@ namespace JetImageLoader.Cache.Storage.CacheImpl
                         {
                             cacheSizeInBytes += file.Length;
 
-                            _lastAccessTimeDictionary.Add(fullCacheFilePath, ISF.GetLastAccessTime(fullCacheFilePath).Millisecond);
+                            _lastAccessTimeDictionary.Add(fullCacheFilePath, DateTimeUtil.ConvertDateTimeToMillis(ISF.GetLastAccessTime(fullCacheFilePath).DateTime));
                         }
                     }
                     catch
