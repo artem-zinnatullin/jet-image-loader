@@ -26,6 +26,13 @@ namespace JetImageLoader
 
         public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (System.ComponentModel.DesignerProperties.IsInDesignTool)
+            {
+                // hack to hide warning "Unable to determine application identity of the caller" in XAML editor
+                // no sideeffects in runtime on WP
+                return null;
+            }
+
             Uri imageUri;
 
             if (value is string)
