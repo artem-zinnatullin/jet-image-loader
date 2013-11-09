@@ -88,10 +88,7 @@ namespace JetImageLoader.Cache.Storage.CacheImpl
                         {
                             cacheSizeInBytes += file.Length;
 
-                            JetImageLoader.Log(ISF.GetLastAccessTime(fullCacheFilePath).Millisecond.ToString());
-
-                            _lastAccessTimeDictionary.Add(fullCacheFilePath,
-                                ISF.GetLastAccessTime(fullCacheFilePath).Millisecond);
+                            _lastAccessTimeDictionary.Add(fullCacheFilePath, ISF.GetLastAccessTime(fullCacheFilePath).Millisecond);
                         }
                     }
                     catch
