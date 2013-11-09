@@ -16,7 +16,7 @@ namespace JetImageLoader.Cache.Storage.CacheImpl
         /// </summary>
         private readonly IDictionary<string, long> _lastAccessTimeDictionary = new SynchronizedDictionary<string, long>(); 
         
-        private long _currentCacheSizeInBytes = -1;
+        private int _currentCacheSizeInMegaBytes = 0;
         private readonly long _cacheLimitInBytes;
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace JetImageLoader.Cache.Storage.CacheImpl
             var fullFileName = Path.Combine(CacheDirectory, CacheFileNameGenerator.GenerateCacheFileName(cacheKey));
             var cacheSizeInBytes = cacheStream.Length;
 
-            while (_currentCacheSizeInBytes + cacheSizeInBytes > _cacheLimitInBytes)
+            while (_currentCacheSizeInMegaBytes + ConvertBytesToMegabytes(cacheSizeInBytes) > ConvertBytesToMegabytes(_cacheLimitInBytes))
             {
                 if (!RemoveOldestCacheFile())
                 {
@@ -52,7 +52,7 @@ namespace JetImageLoader.Cache.Storage.CacheImpl
             if (wasFileSaved)
             {
                 _lastAccessTimeDictionary[Path.Combine(CacheDirectory, fullFileName)] = DateTime.Now.Millisecond;
-                Interlocked.Add(ref _currentCacheSizeInBytes, cacheStream.Length); // Updating current cache size
+                Interlocked.Add(ref _currentCacheSizeInMegaBytes, ConvertBytesToMegabytes(cacheStream.Length)); // Updating current cache size
             }
 
             return wasFileSaved;
@@ -97,7 +97,7 @@ namespace JetImageLoader.Cache.Storage.CacheImpl
                     }
                 }
 
-                Interlocked.Add(ref _currentCacheSizeInBytes, cacheSizeInBytes); // Updating current cache size
+                Interlocked.Add(ref _currentCacheSizeInMegaBytes, ConvertBytesToMegabytes(cacheSizeInBytes)); // Updating current cache size
             });
         }
 
@@ -125,7 +125,7 @@ namespace JetImageLoader.Cache.Storage.CacheImpl
                 {
                     ISF.DeleteFile(oldestCacheFilePath);
                     _lastAccessTimeDictionary.Remove(oldestCacheFilePath);
-                    Interlocked.Add(ref _currentCacheSizeInBytes, -fileSizeInBytes); // Updating current cache size
+                    Interlocked.Add(ref _currentCacheSizeInMegaBytes, -ConvertBytesToMegabytes(fileSizeInBytes)); // Updating current cache size
 
                     JetImageLoader.Log("[delete] cache file " + oldestCacheFilePath);
                     return true;
@@ -141,6 +141,11 @@ namespace JetImageLoader.Cache.Storage.CacheImpl
             }
 
             return false;
+        }
+
+        static int ConvertBytesToMegabytes(long bytes)
+        {
+            return (int) ((bytes / 1024f) / 1024f);
         }
     }
 }
