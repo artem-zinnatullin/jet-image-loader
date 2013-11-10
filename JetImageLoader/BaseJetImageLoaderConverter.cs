@@ -24,7 +24,7 @@ namespace JetImageLoader
             JetImageLoader.Initialize(config);
         }
 
-        public virtual object Convert(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             // hack to hide warning "Unable to determine application identity of the caller"
             if (System.ComponentModel.DesignerProperties.IsInDesignTool)
@@ -40,7 +40,9 @@ namespace JetImageLoader
             {
                 try
                 {
-                    imageUri = new Uri((string)value);
+                    imageUri = String.IsNullOrEmpty(value as string)
+                        ? new Uri(Constants.RESOURCE_IMAGE_EMPTY_PRODUCT, UriKind.Relative)
+                        : new Uri((string)value);
                 }
                 catch
                 {
@@ -58,7 +60,7 @@ namespace JetImageLoader
                 return null;
             }
 
-            if (imageUri.Scheme == "http" || imageUri.Scheme == "https")
+            if (imageUri.IsAbsoluteUri && (imageUri.Scheme == "http" || imageUri.Scheme == "https"))
             {
                 var bitmapImage = new BitmapImage();
 
@@ -79,14 +81,21 @@ namespace JetImageLoader
                             }
                         });
                     }
+                    else
+                    {
+                        Deployment.Current.Dispatcher.BeginInvoke(() =>
+                        {
+                            bitmapImage.UriSource = new Uri(Constants.RESOURCE_IMAGE_EMPTY_PRODUCT, UriKind.Relative);
+                            bitmapImage.CreateOptions = BitmapCreateOptions.BackgroundCreation;
+                        });
+                    }
                 }));
 
                 return bitmapImage;
             }
-            else if (imageUri.Scheme == "file")
-            {
-                return new BitmapImage { UriSource = new Uri((string)value, UriKind.Relative) };
-            }
+            else //if (imageUri.Scheme == "file")
+                return new BitmapImage { UriSource = new Uri(imageUri.AbsolutePath, UriKind.Relative) };
+
 
             return null;
         }
