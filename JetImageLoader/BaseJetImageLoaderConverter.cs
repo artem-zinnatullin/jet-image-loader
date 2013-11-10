@@ -34,15 +34,19 @@ namespace JetImageLoader
 
             if (value == null)
             {
-                imageUri = new Uri(Constants.RESOURCE_IMAGE_EMPTY_PRODUCT, UriKind.Relative);
+                return new BitmapImage { UriSource = new Uri(Constants.RESOURCE_IMAGE_EMPTY_PRODUCT, UriKind.Relative) };
             }
-            else if (value is string)
+            if (value is string)
             {
                 try
                 {
-                    imageUri = String.IsNullOrEmpty(value as string)
-                        ? new Uri(Constants.RESOURCE_IMAGE_EMPTY_PRODUCT, UriKind.Relative)
-                        : new Uri((string)value);
+                    if (String.IsNullOrEmpty(value as string))
+                        return new BitmapImage { UriSource = new Uri(Constants.RESOURCE_IMAGE_EMPTY_PRODUCT, UriKind.Relative) };
+
+                    imageUri = new Uri((string)value);
+
+                    if (imageUri.Scheme == "file")
+                        return new BitmapImage { UriSource = new Uri(imageUri.LocalPath, UriKind.Relative) };
                 }
                 catch
                 {
@@ -60,7 +64,7 @@ namespace JetImageLoader
                 return null;
             }
 
-            if (imageUri.IsAbsoluteUri && (imageUri.Scheme == "http" || imageUri.Scheme == "https"))
+            if (imageUri.Scheme == "http" || imageUri.Scheme == "https")
             {
                 var bitmapImage = new BitmapImage();
 
@@ -93,8 +97,6 @@ namespace JetImageLoader
 
                 return bitmapImage;
             }
-            else //if (imageUri.Scheme == "file")
-                return new BitmapImage { UriSource = new Uri(imageUri.AbsolutePath, UriKind.Relative) };
 
 
             return null;
