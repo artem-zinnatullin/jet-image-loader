@@ -24,18 +24,19 @@ namespace JetImageLoader
             JetImageLoader.Initialize(config);
         }
 
-        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object value, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            // hack to hide warning "Unable to determine application identity of the caller"
             if (System.ComponentModel.DesignerProperties.IsInDesignTool)
-            {
-                // hack to hide warning "Unable to determine application identity of the caller" in XAML editor
-                // no sideeffects in runtime on WP
                 return null;
-            }
 
             Uri imageUri;
 
-            if (value is string)
+            if (value == null)
+            {
+                imageUri = new Uri(Constants.RESOURCE_IMAGE_EMPTY_PRODUCT, UriKind.Relative);
+            }
+            else if (value is string)
             {
                 try
                 {
@@ -70,6 +71,7 @@ namespace JetImageLoader
                             try
                             {
                                 bitmapImage.SetSource(getImageStreamTask.Result);
+                                bitmapImage.CreateOptions = BitmapCreateOptions.BackgroundCreation;
                             }
                             catch
                             {
@@ -80,6 +82,10 @@ namespace JetImageLoader
                 }));
 
                 return bitmapImage;
+            }
+            else if (imageUri.Scheme == "file")
+            {
+                return new BitmapImage { UriSource = new Uri((string)value, UriKind.Relative) };
             }
 
             return null;
