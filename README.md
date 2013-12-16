@@ -1,7 +1,7 @@
 JetImageLoader load, cache, show, do it again!
 ================
 
-fast and powerfull image loader with memory and storage caching for your Windows Phone 8+ projects!
+Fast and powerful image loader with memory and storage caching for your Windows Phone 8+ projects!
 
 (Many ideas were taken from [UniversalImageLoader for Android](https://github.com/nostra13/Android-Universal-Image-Loader))
 
@@ -15,7 +15,16 @@ fast and powerfull image loader with memory and storage caching for your Windows
 
 ##Why JetImageLoader is super?##
 
-1) __Easy to add to your project and start using it in 4 simple steps__:
+####0) It was created to work as Converter! Look:
+
+
+    <Image Source="{Binding YourImageUri, Converter={StaticResource MyAppJetImageLoaderConverter}}"/>
+
+#####WOW, yeah? Super awesome!
+
+##How to add && configure JetImageLoader in your project?
+
+1) __Easy to add to your project and start using it in only 4 simple steps__:
 * 1.1) __Add reference to JetImageLoader.dll or use nuget: PM> Install-Package WP-JetImagLoader__
 * 1.2) __Extend JetImageLoaderConverter and configure it__:
 <pre>
