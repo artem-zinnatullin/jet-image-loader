@@ -46,9 +46,14 @@ Fast and powerful image loader with memory and storage caching for your Windows 
 </pre>
 * 1.3) __Declare MyAppJetImageLoaderConverter in App.xaml__:
 <pre>
-    ````<Application.Resources>
+    ````
+    <Application
+        ...
+        xmlns:myApp="clr-namespace:MyApp.NamespaceWithJetImageLoaderConverter>
+    <Application.Resources>
         <myApp:MyAppJetImageLoaderConverter x:Key="JetImageLoaderConverter"/>
-    </Application.Resources>````
+    </Application.Resources>
+    ...````
 </pre>
 
 * 1.4) __Set it as Converter for Image__:
