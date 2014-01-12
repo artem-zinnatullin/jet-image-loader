@@ -81,5 +81,3 @@ aaand __that is all__, now it can load images from network, cache them in memory
 
 
 ####NuGet: PM> Install-Package WP-JetImagLoader
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/artem-zinnatullin/jet-image-loader/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
