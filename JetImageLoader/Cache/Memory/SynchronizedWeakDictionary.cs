@@ -46,9 +46,9 @@ namespace JetImageLoader.Cache.Memory
                 foreach (var key in _keyList)
                 {
                     _weakRefDictionary.Remove(key);
-                }
-
+                }                
                 _keyList.Clear();
+                Count = 0;
             }
         }
 
