@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetImageLoader", "JetImageLoader.csproj", "{83723B46-02FC-42DA-A803-A1C363F266FA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetImageLoader.Wp7", "..\JetImageLoader.Wp7\JetImageLoader.Wp7.csproj", "{F43848EC-EBFF-4D8C-A30C-953DC65F0AAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JetImageLoaderSample", "..\JetImageLoaderSample\JetImageLoaderSample\JetImageLoaderSample.csproj", "{B18DAC35-0561-4B09-9D58-84AF128144AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +39,24 @@ Global
 		{F43848EC-EBFF-4D8C-A30C-953DC65F0AAB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F43848EC-EBFF-4D8C-A30C-953DC65F0AAB}.Release|ARM.ActiveCfg = Release|Any CPU
 		{F43848EC-EBFF-4D8C-A30C-953DC65F0AAB}.Release|x86.ActiveCfg = Release|Any CPU
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Debug|ARM.ActiveCfg = Debug|ARM
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Debug|ARM.Build.0 = Debug|ARM
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Debug|ARM.Deploy.0 = Debug|ARM
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Debug|x86.ActiveCfg = Debug|x86
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Debug|x86.Build.0 = Debug|x86
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Debug|x86.Deploy.0 = Debug|x86
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Release|ARM.ActiveCfg = Release|ARM
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Release|ARM.Build.0 = Release|ARM
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Release|ARM.Deploy.0 = Release|ARM
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Release|x86.ActiveCfg = Release|x86
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Release|x86.Build.0 = Release|x86
+		{B18DAC35-0561-4B09-9D58-84AF128144AC}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
