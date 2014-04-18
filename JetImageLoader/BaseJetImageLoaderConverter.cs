@@ -13,15 +13,18 @@ namespace JetImageLoader
 
         protected BaseJetImageLoaderConverter()
         {
-            var config = GetJetImageLoaderConfig();
-
-            if (config == null)
+            if (!System.ComponentModel.DesignerProperties.IsInDesignTool)
             {
-                throw new ArgumentException("JetImageLoaderConfig can not be null");
-            }
+                var config = GetJetImageLoaderConfig();
 
-            JetImageLoader = JetImageLoader.Instance;
-            JetImageLoader.Initialize(config);
+                if (config == null)
+                {
+                    throw new ArgumentException("JetImageLoaderConfig can not be null");
+                }
+
+                JetImageLoader = JetImageLoader.Instance;
+                JetImageLoader.Initialize(config);
+            }
         }
 
         public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -30,7 +33,7 @@ namespace JetImageLoader
             {
                 // hack to hide warning "Unable to determine application identity of the caller" in XAML editor
                 // no sideeffects in runtime on WP
-                return null;
+                return value;
             }
 
             Uri imageUri;

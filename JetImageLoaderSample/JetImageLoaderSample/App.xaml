@@ -4,12 +4,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
-    xmlns:app="clr-namespace:JetImageLoaderSample">
+    xmlns:app="clr-namespace:JetImageLoaderSample"
+    xmlns:viewModels="clr-namespace:JetImageLoaderSample.ViewModels">
 
     <!--Application Resources-->
     <Application.Resources>
         <local:LocalizedStrings xmlns:local="clr-namespace:JetImageLoaderSample" x:Key="LocalizedStrings"/>
         <app:SampleJetImageLoaderConverter x:Key="SampleJetImageLoaderConverter"/>
+        <viewModels:MainPageViewModel x:Key="MainPageViewModel"></viewModels:MainPageViewModel>
     </Application.Resources>
 
     <Application.ApplicationLifetimeObjects>

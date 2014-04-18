@@ -11,6 +11,8 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
+    DataContext="{StaticResource MainPageViewModel}"
+	d:DataContext="{d:DesignData /SampleData/MainPageViewModelSampleData.xaml}"
     shell:SystemTray.IsVisible="True">
 
     <Grid x:Name="LayoutRoot" Background="Transparent">

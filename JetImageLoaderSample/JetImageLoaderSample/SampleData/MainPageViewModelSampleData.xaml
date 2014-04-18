@@ -1,0 +1,5 @@
+﻿<ViewModels:MainPageViewModel xmlns:ViewModels="clr-namespace:JetImageLoaderSample.ViewModels">
+    <ViewModels:MainPageViewModel.ImagesList>
+        <ViewModels:Image ImageUrl="http://jetimageloader.artemzin.com/sample_images/1.jpg"></ViewModels:Image>
+    </ViewModels:MainPageViewModel.ImagesList>
+</ViewModels:MainPageViewModel>
