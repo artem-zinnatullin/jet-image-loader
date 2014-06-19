@@ -26,20 +26,27 @@ namespace JetImageLoader
 
         public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            // hack to hide warning "Unable to determine application identity of the caller"
             if (System.ComponentModel.DesignerProperties.IsInDesignTool)
-            {
-                // hack to hide warning "Unable to determine application identity of the caller" in XAML editor
-                // no sideeffects in runtime on WP
                 return null;
-            }
 
             Uri imageUri;
 
+            if (value == null)
+            {
+                return new BitmapImage { UriSource = new Uri(Constants.RESOURCE_IMAGE_EMPTY_PRODUCT, UriKind.Relative) };
+            }
             if (value is string)
             {
                 try
                 {
+                    if (String.IsNullOrEmpty(value as string))
+                        return new BitmapImage { UriSource = new Uri(Constants.RESOURCE_IMAGE_EMPTY_PRODUCT, UriKind.Relative) };
+
                     imageUri = new Uri((string)value);
+
+                    if (imageUri.Scheme == "file")
+                        return new BitmapImage { UriSource = new Uri(imageUri.LocalPath, UriKind.Relative) };
                 }
                 catch
                 {
@@ -70,6 +77,7 @@ namespace JetImageLoader
                             try
                             {
                                 bitmapImage.SetSource(getImageStreamTask.Result);
+                                bitmapImage.CreateOptions = BitmapCreateOptions.BackgroundCreation;
                             }
                             catch
                             {
@@ -77,10 +85,19 @@ namespace JetImageLoader
                             }
                         });
                     }
+                    else
+                    {
+                        Deployment.Current.Dispatcher.BeginInvoke(() =>
+                        {
+                            bitmapImage.UriSource = new Uri(Constants.RESOURCE_IMAGE_EMPTY_PRODUCT, UriKind.Relative);
+                            bitmapImage.CreateOptions = BitmapCreateOptions.BackgroundCreation;
+                        });
+                    }
                 }));
 
                 return bitmapImage;
             }
+
 
             return null;
         }
